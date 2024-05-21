@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './LastDayThoughts.css';
+import jsonData from '../phrases.json';
+import { saveAs } from 'file-saver';
 
 const LastDayThoughts = () => {
     const [text, setText] = useState('');
@@ -9,12 +11,23 @@ const LastDayThoughts = () => {
     };
 
     const handleSave = () => {
-        const blob = new Blob([text + '\n'], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'thoughts.txt';
-        link.click();
-        URL.revokeObjectURL(link.href);
+        // Agrega el nuevo texto al JSON
+        const updatedData = {
+            ...jsonData,
+            thoughts: [
+                ...jsonData.thoughts,
+                text
+            ]
+        };
+
+        // Convierte el objeto JSON actualizado a texto
+        const updatedJsonText = JSON.stringify(updatedData, null, 2);
+
+        // Crea un Blob con el JSON actualizado
+        const blob = new Blob([updatedJsonText], { type: 'application/json' });
+
+        // Sobreescribe el archivo JSON actual
+        saveAs(blob, 'phrases.json');
     };
 
     return (
